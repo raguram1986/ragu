@@ -25,7 +25,7 @@
 
                         <div class="form-group" align="left">
                             <label>Student Name</label>
-                            <input type="text" id="stname" name="stname" placeholder="Student Name" class="form-control" required>
+                            <input type="text" id="stname" name="studentname" placeholder="Student Name" class="form-control" required>
                         </div>
 
                         <div class="form-group" align="left">
@@ -55,13 +55,7 @@
                     <div class="panel-body">
                         <table id="tbl-student" class="table table-bordered" cellpadding="0" cellspacing="0" width="100%">
                             <thead>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                   <th></th>
-                                      <th></th>
+                              <tr><th>Student Name</th><th>Course</th><th>Fee</th><th>Edit</th><th>Delete</th></tr>
                             </thead>
                         </table>
 
@@ -143,17 +137,17 @@
                              $('#stname').val("");
                              $('#course').val("");
                              $('#fee').val("");
-
+                             console.log(data);
                              getall();
 
-                             if(isNew == true)
+                             if(data.status == "success")
                              {
                                  alert("Record Addedd");
                              }
                              else
                              {
 
-                                 alert("Record Updatedd");
+                                 alert("Error");
                              }
 
 
@@ -177,48 +171,34 @@
         $('#tbl-student').dataTable().fnDestroy();
         $.ajax({
 
-            url:"[[${@environment.getProperty('api.base.path')}]]/Student/",
+            url:"[[${@environment.getProperty('api.base.path')}]]/Student/list",
             type: "GET",
             dataType: "JSON",
            success:function(data)
            {
+               $("#tbl-student").dataTable({
+                 "data": data,
+                 "columns": [
+                     { data: 'studentname' },
+                     { data: 'course' },
+                     { data: 'fee' },
+                     {
+                       data: null,
+                       render : function(data, type, full, meta)
+                       {
+                           return '<button class="btn btn-success" onclick="get_details('+ data.id  + ')">Edit</button>';
+                       }
+                     },
+                     {
+                       data: null,
+                       render : function(data, type, full, meta)
+                       {
+                           return '<button class="btn btn-danger" onclick="get_Delete('+ data.id  + ')">Delete</button>';
+                       }
+                     }
 
-               $('#tbl-student').dataTable({
-                   "aaData":data,
-                   "scrollX":true,
-                   "aoColumns":
-                           [
-                                {"sTitle" : "Student Name","mData" : "stname"},
-                                {"sTitle" : "Course","mData" : "course"},
-                                {"sTitle" : "Fee","mData" : "fee"},
-                                 {"sTitle" :
-                                   "Edit",
-                                   "mData" : "id",
-                                   "render" : function(mData,type,row,meta)
-                                   {
-                                       return '<button class="btn btn-success" onclick="get_details('+ mData  + ')">Edit</button>';
-                                   }
-                                },
-                                {"sTitle" :
-                                   "Delete",
-                                   "mData" : "id",
-                                   "render" : function(mData,type,row,meta)
-                                   {
-                                       return '<button class="btn btn-danger" onclick="get_Delete('+ mData  + ')">Delete</button>';
-                                   }
-                                },
-
-
-
-                           ]
-
-
-
-
+                 ]
                });
-
-
-
            }
         });
 
@@ -253,7 +233,7 @@
 
     function get_Delete(id)
     {
-
+      console.log(id);
       $.ajax({
 
           type: "POST",
