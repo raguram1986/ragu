@@ -14,33 +14,26 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.example.emp.domain.Student;
 import com.example.emp.service.StudentService;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
-
-
-@Controller
+@RestController
+@RequestMapping("Student")
 public class StudentController {
-	
+
 	 @Autowired
 	    private StudentService service;
-
-	    @GetMapping("/")
-	    public String viewHomePage(Model model) {
-	        List<Student> liststudent = service.listAll();
-	        model.addAttribute("liststudent", liststudent);
-	        System.out.print("Get / ");	
-	        return "index";
-	    }
-
-	    @GetMapping("/new")
-	    public String add(Model model) {
-	        model.addAttribute("student", new Student());
-	        return "new";
-	    }
 
 	    @RequestMapping(value = "/save", method = RequestMethod.POST)
 	    public String saveStudent(@ModelAttribute("student") Student std) {
 	        service.save(std);
-	        return "redirect:/";
+	        return "{\"status\":\"success\"}";
+	    }
+
+			@RequestMapping(value = "/list", method = RequestMethod.GET)
+	    public List<Student> listStudents() {
+	        List<Student> liststudent = service.listAll();
+	        return liststudent;
 	    }
 
 	    @RequestMapping("/edit/{id}")
@@ -49,7 +42,7 @@ public class StudentController {
 	        Student std = service.get(id);
 	        mav.addObject("student", std);
 	        return mav;
-	        
+
 	    }
 	    @RequestMapping("/delete/{id}")
 	    public String deletestudent(@PathVariable(name = "id") int id) {
@@ -57,7 +50,7 @@ public class StudentController {
 	        return "redirect:/";
 	    }
 
-	
-	
+
+
 
 }
